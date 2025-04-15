@@ -12,6 +12,7 @@ export default function Navbar() {
       <div className="space-x-4">
         <Link href="/" className="hover:underline">Home</Link>
         <Link href="/book-now" className="hover:underline">Book Now</Link>
+        <Link href="/booked-rooms" className="hover:underline">Booked Rooms</Link>
         <Link href="/guests" className="hover:underline">Guests</Link>
         <Link href="/reviews" className="hover:underline">Reviews</Link>
         <Link href="/settings" className="hover:underline">Settings</Link>
