@@ -1,56 +1,43 @@
-'use client';
+"use client";
 
-import {Sidebar, SidebarContent, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider} from '@/components/ui/sidebar';
-import {Home, Users, Settings, MessageSquare} from 'lucide-react';
+import { useState } from "react";
+import Image from "next/image";
+import RoomBooking from "../components/RoomBooking";
 
-export default function DashboardPage() {
+export default function Home() {
+  const [bgColor, setBgColor] = useState("bg-white");
+
+  const toggleBgColor = () => {
+    setBgColor((prevColor) =>
+      prevColor === "bg-white" ? "bg-sky-100" : prevColor === "bg-sky-100" ? "bg-green-100" : "bg-white"
+    );
+  };
+
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <a href="/">
-                <Home className="mr-2 h-4 w-4"/>
-                <span>Dashboard</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <a href="/guests">
-                <Users className="mr-2 h-4 w-4"/>
-                <span>Guests</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <a href="/reviews">
-                <MessageSquare className="mr-2 h-4 w-4"/>
-                <span>Reviews</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <a href="/settings">
-                <Settings className="mr-2 h-4 w-4"/>
-                <span>Settings</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </Sidebar>
-      <SidebarInset>
-        <SidebarContent>
-          <div className="p-4">
-            <h1 className="text-2xl font-bold">Dashboard</h1>
-            <p className="text-muted-foreground">Welcome to HotelZenith Management System.</p>
-          </div>
-        </SidebarContent>
-      </SidebarInset>
-    </SidebarProvider>
+    <div
+      className={`transition-colors duration-300 ${bgColor} min-h-screen`}
+    >
+      <div className="container mx-auto px-4 pt-24 pb-8 text-center max-w-5xl">
+        <h1 className="text-4xl font-extrabold mb-6">Welcome to Our Hotel</h1>
+        <Image
+          src="https://cdn.pixabay.com/photo/2016/11/29/03/53/hotel-1867766_1280.jpg"
+          alt="Hotel Room or Exterior"
+          width={800}
+          height={400}
+          className="rounded-lg shadow-lg mb-8 mx-auto"
+        />
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">Hello, Next.js with Tailwind CSS!</h2>
+          <button onClick={toggleBgColor} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Change Background Color
+          </button>
+        </div>
+
+        <section className="mt-12">
+          <h2 className="text-3xl font-bold mb-6">Our Rooms</h2>
+          <RoomBooking />
+        </section>
+      </div>
+    </div>
   );
 }
-
