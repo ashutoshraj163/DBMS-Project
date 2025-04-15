@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           b.total_price,
           b.status,
           g.first_name AS guest_name,
-          r.room_number
+          r.room_number AS room_number
         FROM
           bookings b
         JOIN
