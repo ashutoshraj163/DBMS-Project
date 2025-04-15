@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const db = require('../lib/db').default;
+const { faker } = require('@faker-js/faker');
 
 async function executeSchema() {
   const schemaPath = path.join(__dirname, '..', 'lib', 'schema.sql');
@@ -20,13 +21,16 @@ async function executeSchema() {
 async function seedData() {
   try {
     // Insert rooms
-    const rooms = [
-      { room_number: '101', type: 'Standard', view: 'City', accessibility: false, price: 100.00, status: 'available' },
-      { room_number: '102', type: 'Deluxe', view: 'Sea', accessibility: true, price: 150.00, status: 'available' },
-      { room_number: '103', type: 'Suite', view: 'Garden', accessibility: false, price: 250.00, status: 'maintenance' },
-    ];
+    for (let i = 0; i < 10; i++) {
+      const room = {
+        room_number: faker.string.alphanumeric({ length: 3 }),
+        type: faker.helpers.arrayElement(['Standard', 'Deluxe', 'Suite']),
+        view: faker.helpers.arrayElement(['City', 'Sea', 'Garden', null]),
+        accessibility: faker.datatype.boolean(),
+        price: faker.number.float({ min: 80, max: 300, precision: 2 }),
+        status: faker.helpers.arrayElement(['available', 'occupied', 'maintenance']),
+      };
 
-    for (const room of rooms) {
       await db.query(
         'INSERT INTO rooms (room_number, type, view, accessibility, price, status) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE room_number=room_number',
         [room.room_number, room.type, room.view, room.accessibility, room.price, room.status]
@@ -34,12 +38,15 @@ async function seedData() {
     }
 
     // Insert guests
-    const guests = [
-      { first_name: 'John', last_name: 'Doe', email: 'john.doe@example.com', phone: '1234567890', special_requests: 'None' },
-      { first_name: 'Jane', last_name: 'Smith', email: 'jane.smith@example.com', phone: '0987654321', special_requests: 'Late check-in' },
-    ];
+    for (let i = 0; i < 10; i++) {
+      const guest = {
+        first_name: faker.person.firstName(),
+        last_name: faker.person.lastName(),
+        email: faker.internet.email(),
+        phone: faker.phone.number(),
+        special_requests: faker.lorem.sentence(),
+      };
 
-    for (const guest of guests) {
       await db.query(
         'INSERT INTO guests (first_name, last_name, email, phone, special_requests) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE email=email',
         [guest.first_name, guest.last_name, guest.email, guest.phone, guest.special_requests]
@@ -47,31 +54,20 @@ async function seedData() {
     }
 
     // Insert bookings
-    // For simplicity, link guest_id and room_id by selecting from inserted data
     const [guestRows]: any[] = await db.query('SELECT id FROM guests');
     const [roomRows]: any[] = await db.query('SELECT id FROM rooms');
 
     if (guestRows.length > 0 && roomRows.length > 0) {
-      const bookings = [
-        {
-          guest_id: guestRows[0].id,
-          room_id: roomRows[0].id,
-          check_in: '2024-07-01',
-          check_out: '2024-07-05',
-          status: 'booked',
-          total_price: 400.00,
-        },
-        {
-          guest_id: guestRows[1].id,
-          room_id: roomRows[1].id,
-          check_in: '2024-07-10',
-          check_out: '2024-07-15',
-          status: 'checked_in',
-          total_price: 750.00,
-        },
-      ];
+      for (let i = 0; i < 10; i++) {
+        const booking = {
+          guest_id: faker.helpers.arrayElement(guestRows).id,
+          room_id: faker.helpers.arrayElement(roomRows).id,
+          check_in: faker.date.future().toISOString().slice(0, 10),
+          check_out: faker.date.future().toISOString().slice(0, 10),
+          status: faker.helpers.arrayElement(['booked', 'checked_in', 'checked_out', 'cancelled']),
+          total_price: faker.number.float({ min: 100, max: 1000, precision: 2 }),
+        };
 
-      for (const booking of bookings) {
         await db.query(
           'INSERT INTO bookings (guest_id, room_id, check_in, check_out, status, total_price) VALUES (?, ?, ?, ?, ?, ?)',
           [booking.guest_id, booking.room_id, booking.check_in, booking.check_out, booking.status, booking.total_price]
